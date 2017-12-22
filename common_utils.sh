@@ -191,6 +191,14 @@ function build_wheel_cmd {
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
     (cd $repo_dir && $cmd $wheelhouse)
+    for wheel in $(ls $wheelhouse/*.whl); do
+        unzip -q $wheel -d $wheelhouse/tmp-wheel
+        pushd $wheelhouse/tmp-wheel
+        find . -name "*.so" | xargs strip
+        zip -q -r $wheel *
+        popd
+        rm -rf $wheelhouse/tmp-wheel
+    done
     repair_wheelhouse $wheelhouse
 }
 
